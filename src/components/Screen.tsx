@@ -7,7 +7,6 @@ import { GameSnapshot } from "server/Game";
 import { useSnapshot } from "valtio";
 import StartNewGameModal from "./modals/StartNewGameModal";
 import { Keyboard } from "./Keyboard";
-import { Board } from "./Board";
 
 export function Screen() {
   useEffect(() => {
@@ -45,13 +44,9 @@ export function Screen() {
       <div className="h-screen flex text-white bg-[#161511]">
         <div className="w-full flex flex-col">
           <div className="flex justify-center">
-            hello
             {me && me.guesses}
-            <div onClick={() => socket.emit("command", { type: "submit_guess", payload: { guess: 'house' } })}>
-              send
-            </div>
+
           </div>
-          <Board />
           <Keyboard />
         </div>
       </div >
