@@ -7,6 +7,7 @@ import { GameSnapshot } from "server/Game";
 import { useSnapshot } from "valtio";
 import StartNewGameModal from "./modals/StartNewGameModal";
 import { Keyboard } from "./Keyboard";
+import { Board } from "./Board";
 
 export function Screen() {
   useEffect(() => {
@@ -44,7 +45,7 @@ export function Screen() {
       <div className="h-screen flex text-white bg-[#161511]">
         <div className="w-full flex flex-col">
           <div className="flex justify-center">
-            {me && me.guesses}
+            <Board />
 
           </div>
           <Keyboard />

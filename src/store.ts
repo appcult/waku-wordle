@@ -40,12 +40,14 @@ if (process.env.NODE_ENV === 'development') {
 export function typeLetter(letter: string) {
   //if store.guess.length === store.gameSnapshot.
   store.guess += letter
+  console.log(letter)
+  console.log(store.guess)
 }
 
 export function enter() {
   store.guess = '';
   socket.emit("command", {
-    type: "submit_guess", payload: { guess: 'house' }
+    type: "submit_guess", payload: { guess: store.guess }
   })
 }
 
