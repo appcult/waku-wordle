@@ -42,14 +42,11 @@ export function Screen() {
   return (
     <>
       <div className="fixed top-0 left-0 right-0 z-10 bg-[#161511]" />
-      <div className="h-screen flex text-white bg-[#161511]">
-        <div className="w-full flex flex-col">
-          <div className="flex justify-center">
-            <Board />
-
-          </div>
-          <Keyboard />
+      <div className="h-screen flex flex-col text-white bg-[#161511] justify-between">
+        <div className="flex justify-center">
+          <Board />
         </div>
+        <Keyboard />
       </div >
       {modals.startNewGame && <StartNewGameModal />}
     </>

@@ -45,10 +45,10 @@ export function typeLetter(letter: string) {
 }
 
 export function enter() {
-  store.guess = '';
   socket.emit("command", {
     type: "submit_guess", payload: { guess: store.guess }
   })
+  store.guess = '';
 }
 
 export function backspace() {

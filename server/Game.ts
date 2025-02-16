@@ -4,8 +4,7 @@ export type ChatType = "sender" | "private" | "channel" | "group" | "supergroup"
 export interface PlayerSnapshot {
   id: bigint;
   name: string | null;
-  guesses: string[];
-  results: LetterResult[][];
+  letterGrid: Letter[][];
   hasWon: boolean;
   online: boolean;
 }
@@ -20,20 +19,32 @@ export interface GameSnapshot {
   isGameOver: boolean;
   winner: bigint | null;
 }
+// Add new Letter type
+export class Letter {
+  character: string;
+  result: LetterResult;
+  row: number;
+  column: number;
 
+  constructor(character: string, result: LetterResult, row: number, column: number) {
+    this.character = character.toUpperCase();
+    this.result = result;
+    this.row = row;
+    this.column = column;
+  }
+}
+// Update Player class
 export class Player {
   id: bigint;
   name: string | null;
-  guesses: string[];
-  results: LetterResult[][];
+  letterGrid: Letter[][]; // Replaces guesses and results
   hasWon: boolean;
   online: boolean;
 
   constructor(id: bigint) {
     this.id = id;
     this.name = null;
-    this.guesses = [];
-    this.results = [];
+    this.letterGrid = [];
     this.hasWon = false;
     this.online = false;
   }
@@ -66,7 +77,7 @@ export class Game {
 
   private selectRandomWord(): string {
     // Implement your word selection logic from a predefined list
-    return 'BASIC'; // Temporary placeholder
+    return 'basic'; // Temporary placeholder
   }
 
   joinUser(userId: bigint): boolean {
@@ -114,8 +125,7 @@ export class Game {
 
     // Reset player states while keeping them in the game
     for (const player of this.players) {
-      player.guesses = [];
-      player.results = [];
+      player.letterGrid = [];
       player.hasWon = false;
     }
 
@@ -128,29 +138,29 @@ export class Game {
     if (this.isGameOver) return false;
 
     const player = this.getPlayer(userId);
-    if (!player || player.hasWon || player.guesses.length >= this.maxAttempts) return false;
+    if (!player || player.hasWon || player.letterGrid.length >= this.maxAttempts) return false;
 
     if (!this.validateGuess(guess)) return false;
 
     const result = this.calculateResult(guess);
-    player.guesses.push(guess);
-    player.results.push(result);
+    const row = player.letterGrid.length;
+    const guessLetters = guess.split('').map((char, column) =>
+      new Letter(char, result[column], row, column)
+    );
 
-    if (guess === this.targetWord) {
+    player.letterGrid.push(guessLetters);
+
+    if (guess.toUpperCase() === this.targetWord.toUpperCase()) {
       player.hasWon = true;
-      if (!this.isGameOver) {  // Only set winner if game isn't already over
+      if (!this.isGameOver) {
         this.isGameOver = true;
         this.winner = player.id;
       }
-    } else if (player.guesses.length === this.maxAttempts) {
+    } else if (player.letterGrid.length === this.maxAttempts) {
       this.checkGameOver();
     }
 
-    // Check if other players might have exhausted attempts
-    if (!this.isGameOver) {
-      this.checkGameOver();
-    }
-
+    if (!this.isGameOver) this.checkGameOver();
     return true;
   }
 
@@ -165,12 +175,12 @@ export class Game {
     }
 
     // All players exhausted attempts
-    if (this.players.every(p => p.guesses.length >= this.maxAttempts)) {
+    if (this.players.every(p => p.letterGrid.length >= this.maxAttempts)) {
       this.isGameOver = true;
       // Tiebreaker: Player with most correct letters
       const playerScores = this.players.map(p => ({
         id: p.id,
-        score: p.results.flat().filter(r => r === 'right').length
+        score: p.letterGrid.flat().filter(letter => letter.result === 'right').length
       }));
 
       const maxScore = Math.max(...playerScores.map(p => p.score));
@@ -187,7 +197,7 @@ export class Game {
   private calculateResult(guess: string): LetterResult[] {
     const result: LetterResult[] = [];
     const targetLetters = this.targetWord.split('');
-    const guessLetters = guess.toUpperCase().split('');
+    const guessLetters = guess.split('');
 
     // First pass for correct letters
     for (let i = 0; i < guessLetters.length; i++) {
@@ -229,8 +239,7 @@ export class Game {
     return {
       id: player.id,
       name: player.name,
-      guesses: [...player.guesses],
-      results: [...player.results],
+      letterGrid: player.letterGrid.map(row => [...row]),
       hasWon: player.hasWon,
       online: player.online
     };
