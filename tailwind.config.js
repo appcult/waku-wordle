@@ -6,6 +6,13 @@ export default {
       colors: {
         bg: { DEFAULT: '#161512', dark: '#13120e' },
         popup: '#3F3F3F',
+        sf: {
+          DEFAULT: '#818384',
+          active: '#424749',
+          right: '#538d4e',
+          misplaced: '#b59f3b',
+          wrong: '#3a3a3c'
+        },
         text: {
           DEFAULT: '#B3B3B3',
           light: '#FFFFFF',

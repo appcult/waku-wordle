@@ -27,7 +27,7 @@ export class Letter {
   column: number;
 
   constructor(character: string, result: LetterResult, row: number, column: number) {
-    this.character = character.toUpperCase();
+    this.character = character;
     this.result = result;
     this.row = row;
     this.column = column;
@@ -150,7 +150,7 @@ export class Game {
 
     player.letterGrid.push(guessLetters);
 
-    if (guess.toUpperCase() === this.targetWord.toUpperCase()) {
+    if (guess === this.targetWord) {
       player.hasWon = true;
       if (!this.isGameOver) {
         this.isGameOver = true;

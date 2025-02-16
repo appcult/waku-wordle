@@ -1,6 +1,6 @@
 import { store } from "@/store";
 import { cn } from "@udecode/cn";
-import { Letter, LetterResult } from "server/Game";
+import { LetterResult } from "server/Game";
 import { useSnapshot } from "valtio";
 
 function LetterBox({ character, result }: { character?: string | undefined, result?: LetterResult | '' }) {
@@ -8,20 +8,15 @@ function LetterBox({ character, result }: { character?: string | undefined, resu
     <div
       className={cn(
         "h-14 w-14 flex justify-center items-center",
-        !character && "border-2 border-white",
-        result === '' && 'border-2 border-white',
-        result === "right" && "bg-[#4b7348]",
-        result === "misplaced" && "bg-[#8e7f3b]",
-        result === "wrong" && "bg-[#393c3e]"
+        (!character || result === '') && "border-2 border-sf-wrong",
+        result === "right" && "bg-sf-right",
+        result === "misplaced" && "bg-sf-misplaced",
+        result === "wrong" && "bg-sf-wrong"
       )}
     >
-      {character}
+      {character?.toUpperCase()}
     </div>
   );
-}
-
-function EmptyBox() {
-  return <div className="h-14 w-14 border-2 border-white"></div>;
 }
 
 export function Board() {

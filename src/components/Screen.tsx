@@ -41,8 +41,7 @@ export function Screen() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-10 bg-[#161511]" />
-      <div className="h-screen flex flex-col text-white bg-[#161511] justify-between">
+      <div className="h-screen flex flex-col text-white bg-[#121213] justify-between">
         <div className="flex justify-center">
           <Board />
         </div>
