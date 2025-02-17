@@ -1,12 +1,18 @@
 import { Server as SocketIOServer } from "socket.io";
 import * as SocketIOParser from '@kim5257/socket.io-parser-bigint';
-import { GameSnapshot } from "./Game";
+import { GameSnapshot, Language, WordLength } from "./Game";
 import { GamesManager } from "./GamesManager";
 
 // Define al possible command types and their payloads
 type Command =
-  | { type: "start_new_game" }
-  | { type: "submit_guess"; payload: { guess: string } }
+  | {
+    type: "start_new_game";
+    payload: { language?: Language, wordLength?: WordLength }
+  }
+  | {
+    type: "submit_guess";
+    payload: { guess: string }
+  }
 
 // Update ClientToServerEvents to use single command event
 export interface ClientToServerEvents {
@@ -57,7 +63,7 @@ io.on("connection", (socket) => {
 
     switch (command.type) {
       case "start_new_game":
-        game.startNewGame();
+        game.startNewGame(command.payload.language, command.payload.wordLength);
         break;
       case "submit_guess":
         game.submitGuess(userId, command.payload.guess);

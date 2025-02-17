@@ -3,7 +3,7 @@ import { cn } from "@udecode/cn";
 import { LetterResult } from "server/Game";
 import { useSnapshot } from "valtio";
 
-function LetterBox({ character, result }: { character?: string | undefined, result?: LetterResult | '' }) {
+function LetterBox({ character, result }: { character?: string, result?: LetterResult | '' }) {
   return (
     <div
       className={cn(
@@ -20,30 +20,41 @@ function LetterBox({ character, result }: { character?: string | undefined, resu
 }
 
 export function Board() {
-  const { me, guess } = useSnapshot(store);
+  const { me, guess, gameSnapshot } = useSnapshot(store);
   if (!me) return null;
 
-  const maxLetters = 5;
-  const currentRow = me.letterGrid.findIndex(row => row.every(letter => !letter.character));
-  const lastRowIndex = currentRow !== -1 ? currentRow : me.letterGrid.length;
+  // Fallback to defaults if gameSnapshot is null
+  const wordLength = gameSnapshot?.wordLength ?? 5;
+  const maxAttempts = gameSnapshot?.maxAttempts ?? 6;
+
+  // The current guess row is simply the length of the letterGrid
+  const guessRowIndex = me.letterGrid.length;
 
   return (
     <div className="flex flex-col space-y-1">
-      {[...Array(6)].map((_, row) => (
-        <div key={`empty-${row}`} className="flex flex-row space-x-1">
-          {[...Array(5)].map((_, column) => {
-            if (row === lastRowIndex && column < guess.length) {
-              return <LetterBox key={`guess-${row}-${column}`}
-                character={guess[column]} result={""}
-              />;
+      {Array.from({ length: maxAttempts }).map((_, rowIndex) => (
+        <div key={`row-${rowIndex}`} className="flex flex-row space-x-1">
+          {Array.from({ length: wordLength }).map((_, colIndex) => {
+            // If we're on the "current" row, display typed letters
+            if (rowIndex === guessRowIndex && colIndex < guess.length) {
+              return (
+                <LetterBox
+                  key={`guess-${rowIndex}-${colIndex}`}
+                  character={guess[colIndex]}
+                  result=""
+                />
+              );
             }
-            const letter = me.letterGrid[row]?.[column];
-            return letter && letter.character !== "" ? (
-              <LetterBox key={`filled-${row}-${column}`}
+            // Otherwise, see if there's a letter from a submitted guess
+            const letter = me.letterGrid[rowIndex]?.[colIndex];
+            return letter && letter.character ? (
+              <LetterBox
+                key={`filled-${rowIndex}-${colIndex}`}
                 character={letter.character}
-                result={letter.result} />
+                result={letter.result}
+              />
             ) : (
-              <LetterBox key={`filled-${row}-${column}`} />
+              <LetterBox key={`empty-${rowIndex}-${colIndex}`} />
             );
           })}
         </div>
