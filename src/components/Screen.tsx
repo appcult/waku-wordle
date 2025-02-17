@@ -35,6 +35,8 @@ export function Screen() {
       store.enemy = gameSnapshot.players.find(player => player.id !== userId);
       if (store.gameSnapshot.isGameOver === true) {
         store.modals.startNewGame = true
+      } else {
+        store.modals.startNewGame = false
       }
     });
 
@@ -44,7 +46,7 @@ export function Screen() {
 
   return (
     <>
-      <div className="h-screen flex flex-col text-white bg-[#121213] justify-between py-4">
+      <div className="h-screen flex flex-col text-white bg-[#121213] justify-between py-2">
         <div className="flex justify-center">
           <Board />
         </div>

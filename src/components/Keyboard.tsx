@@ -21,7 +21,7 @@ function Letter({ letter }: { letter: string }) {
     <div
       onClick={() => typeLetter(letter)}
       className={cn(
-        "bg-sf h-16 flex justify-center items-center w-8 rounded-sm active:bg-sf-active select-none cursor-pointer",
+        "bg-sf h-12 flex justify-center items-center flex-1 rounded-md active:bg-sf-active select-none cursor-pointer",
         result === "right" && "!bg-sf-right",
         result === "misplaced" && "!bg-sf-misplaced",
         result === "wrong" && "!bg-sf-wrong"
@@ -32,13 +32,19 @@ function Letter({ letter }: { letter: string }) {
   );
 }
 
-function Enter() {
+function Enter({ language }: { language: Language }) {
+  const labels: Record<Language, string> = {
+    en: "SUBMIT",
+    ru: "ПРОВЕРИТЬ",
+    uk: "ПЕРЕВІРИТИ",
+  };
+
   return (
     <div
       onClick={enter}
-      className="bg-sf h-16 flex justify-center items-center w-12 rounded-sm active:bg-sf-active select-none cursor-pointer"
+      className="bg-sf h-12 flex justify-center items-center w-full rounded-md active:bg-sf-active select-none cursor-pointer text-lg font-bold"
     >
-      Enter
+      {labels[language]}
     </div>
   );
 }
@@ -47,7 +53,7 @@ function Backspace() {
   return (
     <div
       onClick={backspace}
-      className="bg-sf h-16 flex justify-center items-center w-12 rounded-sm active:bg-sf-active select-none cursor-pointer"
+      className="bg-sf h-12 flex justify-center items-center rounded-md active:bg-sf-active select-none cursor-pointer"
     >
       {"<x"}
     </div>
@@ -58,14 +64,8 @@ export function Keyboard() {
   const { gameSnapshot } = useSnapshot(store);
 
   // 2. Safely determine current language
-  //    If gameSnapshot.language is not one of 'en', 'ru', or 'uk',
-  //    default to 'en'.
   let currentLanguage: Language = "en";
-  if (
-    gameSnapshot?.language === "ru" ||
-    gameSnapshot?.language === "uk" ||
-    gameSnapshot?.language === "en"
-  ) {
+  if (["ru", "uk", "en"].includes(gameSnapshot?.language)) {
     currentLanguage = gameSnapshot.language;
   }
 
@@ -73,30 +73,41 @@ export function Keyboard() {
   const layout = keyboardLayouts[currentLanguage];
 
   return (
-    <div className="flex flex-col justify-center items-center gap-1">
+    <div className="flex flex-col justify-center items-center gap-1 w-full px-2">
       {layout.map((row, rowIndex) => {
-        // For the last row, include Enter and Backspace
-        if (rowIndex === 2) {
+        // For the first 2 rows, keep it as flex
+        if (rowIndex < 2) {
           return (
-            <div key={`row-${rowIndex}`} className="flex flex-row gap-1">
-              <Enter />
+            <div key={`row-${rowIndex}`} className="flex flex-row gap-1 w-full">
               {row.split("").map((letter) => (
                 <Letter letter={letter} key={letter} />
               ))}
-              <Backspace />
             </div>
           );
         }
 
-        // For the first two rows, just show the letters
+        // For the 3rd row, use a grid so Backspace spans 2 columns + gap
         return (
-          <div key={`row-${rowIndex}`} className="flex flex-row gap-1">
+          <div
+            key={`row-${rowIndex}`}
+            className="grid gap-1 w-full"
+            // We create row.length + 2 columns, so the last item can span 2 columns
+            style={{ gridTemplateColumns: `repeat(${row.length + 2}, 1fr)` }}
+          >
             {row.split("").map((letter) => (
-              <Letter letter={letter} key={letter} />
+              <div key={letter}>
+                <Letter letter={letter} />
+              </div>
             ))}
+            {/* Place Backspace in the last 2 columns */}
+            <div className="col-span-2">
+              <Backspace />
+            </div>
           </div>
         );
       })}
+      {/* Enter button across full width below all rows */}
+      <Enter language={currentLanguage} />
     </div>
   );
 }
