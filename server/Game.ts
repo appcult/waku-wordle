@@ -23,14 +23,10 @@ export interface GameSnapshot {
 export class Letter {
   character: string;
   result: LetterResult;
-  row: number;
-  column: number;
 
   constructor(character: string, result: LetterResult, row: number, column: number) {
     this.character = character;
     this.result = result;
-    this.row = row;
-    this.column = column;
   }
 }
 // Update Player class

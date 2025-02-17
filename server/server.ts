@@ -5,10 +5,8 @@ import { GamesManager } from "./GamesManager";
 
 // Define al possible command types and their payloads
 type Command =
-  | { type: "start_new_game"; payload: { time: number | undefined; side: "w" | "b" | "random" } }
+  | { type: "start_new_game" }
   | { type: "submit_guess"; payload: { guess: string } }
-  | { type: "time_is_out" }
-  | { type: "resign" };
 
 // Update ClientToServerEvents to use single command event
 export interface ClientToServerEvents {
@@ -59,7 +57,7 @@ io.on("connection", (socket) => {
 
     switch (command.type) {
       case "start_new_game":
-        //game.startNewGame(userId, command.payload.side, command.payload.time);
+        game.startNewGame();
         break;
       case "submit_guess":
         game.submitGuess(userId, command.payload.guess);

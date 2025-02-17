@@ -33,15 +33,18 @@ export function Screen() {
       store.gameSnapshot = gameSnapshot;
       store.me = gameSnapshot.players.find(player => player.id === userId);
       store.enemy = gameSnapshot.players.find(player => player.id !== userId);
+      if (store.gameSnapshot.isGameOver === true) {
+        store.modals.startNewGame = true
+      }
     });
 
   }, []);
 
-  const { me, enemy, modals, gameSnapshot } = useSnapshot(store)
+  const { modals } = useSnapshot(store)
 
   return (
     <>
-      <div className="h-screen flex flex-col text-white bg-[#121213] justify-between">
+      <div className="h-screen flex flex-col text-white bg-[#121213] justify-between py-4">
         <div className="flex justify-center">
           <Board />
         </div>
