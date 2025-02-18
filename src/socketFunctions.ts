@@ -9,7 +9,6 @@ export const startNewGame = (language: Language, wordLength: WordLength) => {
       wordLength: wordLength
     }
   });
-  store.modals.startNewGame = false;
 };
 
 

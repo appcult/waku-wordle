@@ -11,12 +11,9 @@ import { Board } from "./Board";
 
 export function Screen() {
   useEffect(() => {
-    // Get search parameters from URL
     const searchParams = new URLSearchParams(window.location.search);
     const roomId = searchParams.get('roomId') || '1';
     const userIdParam = searchParams.get('userId');
-
-    // Parse userId as BigInt or default to 1n
     const userId = userIdParam ? BigInt(userIdParam) : BigInt(1);
 
     store.roomId = roomId;
@@ -24,25 +21,28 @@ export function Screen() {
 
     socket.emit("join game", roomId, userId);
 
-    socket.on("ping", () => {
-      console.log("ping")
-    })
-
     socket.on("gameSnapshot", (gameSnapshot: GameSnapshot) => {
-      console.log("received gameSnapshot");
+      // Compare previous and new game timestamps
+      const previousCreatedAt = store.gameSnapshot?.createdAt;
       store.gameSnapshot = gameSnapshot;
       store.me = gameSnapshot.players.find(player => player.id === userId);
       store.enemy = gameSnapshot.players.find(player => player.id !== userId);
-      if (store.gameSnapshot.isGameOver === true) {
-        store.modals.startNewGame = true
-      } else {
-        store.modals.startNewGame = false
+
+      // If the game timestamp changed, it's a new game—clear the guess
+      if (previousCreatedAt !== gameSnapshot.createdAt) {
+        store.guess = '';
       }
+
+      // Show the start new game modal if the game is over
+      store.modals.startNewGame = gameSnapshot.isGameOver;
     });
 
+    return () => {
+      socket.off("gameSnapshot");
+    };
   }, []);
 
-  const { modals } = useSnapshot(store)
+  const { modals } = useSnapshot(store);
 
   return (
     <>
@@ -51,8 +51,9 @@ export function Screen() {
           <Board />
         </div>
         <Keyboard />
-      </div >
+      </div>
       {modals.startNewGame && <StartNewGameModal />}
     </>
   );
 }
+

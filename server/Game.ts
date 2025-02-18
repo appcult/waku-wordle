@@ -27,6 +27,7 @@ export interface GameSnapshot {
   isGameOver: boolean;
   winner: bigint | null;
   language: Language;
+  createdAt: number;
 }
 
 export class Letter {
@@ -294,7 +295,8 @@ export class Game {
       maxAttempts: this.maxAttempts,
       isGameOver: this.isGameOver,
       winner: this.winner,
-      language: this.language
+      language: this.language,
+      createdAt: this.createdAt
     };
   }
 

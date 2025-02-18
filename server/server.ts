@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
 
     switch (command.type) {
       case "start_new_game":
-        game.startNewGame(command.payload.language, command.payload.wordLength);
+        await game.startNewGame(command.payload.language, command.payload.wordLength);
         break;
       case "submit_guess":
         game.submitGuess(userId, command.payload.guess);
