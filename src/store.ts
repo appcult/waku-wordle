@@ -2,7 +2,7 @@ import { socket } from "./socket";
 import { proxy } from "valtio";
 import { devtools } from 'valtio/utils'
 import type { } from '@redux-devtools/extension'
-import { GameSnapshot, PlayerSnapshot } from "server/Game";
+import { GameSnapshot, Language, PlayerSnapshot, WordLength } from "server/Game";
 
 
 class ChessStore {
@@ -15,6 +15,7 @@ class ChessStore {
 
   gameSnapshot: GameSnapshot | null = null;
   guess: string = '';
+  errorAnimation: boolean = false;
 
   modals = {
     startNewGame: false,
@@ -45,12 +46,33 @@ export function typeLetter(letter: string) {
 }
 
 export function enter() {
-  socket.emit("command", {
-    type: "submit_guess", payload: { guess: store.guess }
-  })
-  store.guess = '';
+  socket.emit(
+    "command",
+    {
+      type: "submit_guess",
+      payload: { guess: store.guess }
+    },
+    (result: boolean) => {
+      if (result) {
+        // Guess was accepted – clear the input
+        store.guess = '';
+      } else {
+        // Invalid guess – trigger error animation
+        store.errorAnimation = true;
+      }
+    }
+  );
 }
+
 
 export function backspace() {
   store.guess = store.guess.slice(0, -1)
+}
+
+// 2) startNewGame without a callback
+export function startNewGame(language: Language, wordLength: WordLength) {
+  socket.emit("command", {
+    type: "start_new_game",
+    payload: { language, wordLength }
+  });
 }

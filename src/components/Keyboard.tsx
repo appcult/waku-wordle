@@ -1,7 +1,7 @@
-import React from "react";
 import { typeLetter, enter, backspace, store } from "@/store";
 import { cn } from "@udecode/cn";
 import { useSnapshot } from "valtio";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 // 1. Restrict keys to only 'en', 'ru', 'uk'
 type Language = "en" | "ru" | "uk";
@@ -55,7 +55,7 @@ function Backspace() {
       onClick={backspace}
       className="bg-sf h-12 flex justify-center items-center rounded-md active:bg-sf-active select-none cursor-pointer"
     >
-      {"<x"}
+      <FaDeleteLeft size={24} />
     </div>
   );
 }

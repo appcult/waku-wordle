@@ -1,9 +1,8 @@
 "use client"
 import React, { useState } from 'react';
-import { store } from '@/store';
+import { startNewGame, store } from '@/store';
 import { Modal } from './Modal';
 import { useSnapshot } from 'valtio';
-import { startNewGame } from '@/socketFunctions';
 import { cn } from "@udecode/cn";
 import { WordLength } from 'server/Game';
 

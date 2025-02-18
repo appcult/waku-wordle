@@ -17,8 +17,9 @@ type Command =
 // Update ClientToServerEvents to use single command event
 export interface ClientToServerEvents {
   "join game": (roomId: string, userId: bigint) => void;
-  "command": (command: Command) => void;
+  "command": (command: Command, callback?: (result: boolean) => void) => void;
 }
+
 
 export interface ServerToClientEvents {
   gameSnapshot: (gameSnapshot: GameSnapshot) => void;
@@ -56,33 +57,34 @@ io.on("connection", (socket) => {
   });
 
   // Single command handler for all game actions
-  socket.on("command", async (command) => {
+  socket.on("command", async (command, callback) => {
     const { roomId, userId } = socket.data;
     const game = gamesManager.getGame(roomId, userId, "private");
-    if (!game) return;
+    if (!game) {
+      if (callback) callback(false);
+      return;
+    }
 
+    let result = true;
     switch (command.type) {
       case "start_new_game":
         await game.startNewGame(command.payload.language, command.payload.wordLength);
         break;
       case "submit_guess":
-        game.submitGuess(userId, command.payload.guess);
+        result = game.submitGuess(userId, command.payload.guess);
         break;
       default:
         console.warn("Unknown command type:", command);
+        if (callback) callback(false);
         return;
     }
 
-    // update game
-    // update game players
-    //if (command.type === "start_new_game") {
-    //  createNewGame(client, roomId, game)
-    //} else {
-    //  updateGame(client, game)
-    //}
-
     io.in(roomId).emit("gameSnapshot", game.getSnapshot());
+    if (command.type === "submit_guess" && callback) {
+      callback(result);
+    }
   });
+
 
   socket.on("disconnect", () => {
     console.log("User disconnected");
