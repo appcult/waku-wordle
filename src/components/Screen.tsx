@@ -24,14 +24,15 @@ export function Screen() {
     socket.on("gameSnapshot", (gameSnapshot: GameSnapshot) => {
       // Compare previous and new game timestamps
       const previousCreatedAt = store.gameSnapshot?.createdAt;
+      if (previousCreatedAt !== gameSnapshot.createdAt) {
+        store.guess = '';
+      }
       store.gameSnapshot = gameSnapshot;
       store.me = gameSnapshot.players.find(player => player.id === userId);
       store.enemy = gameSnapshot.players.find(player => player.id !== userId);
 
       // If the game timestamp changed, it's a new game—clear the guess
-      if (previousCreatedAt !== gameSnapshot.createdAt) {
-        store.guess = '';
-      }
+
 
       // Show the start new game modal if the game is over
       store.modals.startNewGame = gameSnapshot.isGameOver;
