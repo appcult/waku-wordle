@@ -8,22 +8,17 @@ export function Board() {
   const { me, guess, gameSnapshot, errorAnimation } = useSnapshot(store);
   const activeRowRef = useRef<HTMLDivElement | null>(null);
 
-  // When errorAnimation is true, apply a temporary style change to blink the active row
   useEffect(() => {
     if (errorAnimation && activeRowRef.current) {
       const letterBoxes = activeRowRef.current.querySelectorAll("div");
       letterBoxes.forEach((box) => {
-        // Save original border color
         const original = window.getComputedStyle(box).borderColor;
-        // Apply immediate change
         box.style.transition = "border-color 0.15s ease-in-out";
         box.style.borderColor = "red";
-        // Revert after 150ms
         setTimeout(() => {
           box.style.borderColor = original;
         }, 150);
       });
-      // Reset errorAnimation after the blink (300ms total)
       const timer = setTimeout(() => {
         store.errorAnimation = false;
       }, 300);

@@ -22,9 +22,9 @@ function Letter({ letter }: { letter: string }) {
       onClick={() => typeLetter(letter)}
       className={cn(
         "bg-sf h-12 flex justify-center items-center flex-1 rounded-md active:bg-sf-active select-none cursor-pointer",
-        result === "right" && "!bg-sf-right",
-        result === "misplaced" && "!bg-sf-misplaced",
-        result === "wrong" && "!bg-sf-wrong"
+        result === "right" && "bg-sf-right active:bg-sf-right-active",
+        result === "misplaced" && "bg-sf-misplaced active:bg-sf-misplaced-active",
+        result === "wrong" && "bg-sf-wrong active:bg-sf-wrong-active"
       )}
     >
       {letter.toUpperCase()}

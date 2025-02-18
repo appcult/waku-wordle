@@ -9,9 +9,18 @@ export default {
         sf: {
           DEFAULT: '#818384',
           active: '#424749',
-          right: '#538d4e',
-          misplaced: '#b59f3b',
-          wrong: '#3a3a3c'
+          right: {
+            DEFAULT: '#538d4e',
+            active: '#396835',
+          },
+          misplaced: {
+            DEFAULT: '#b59f3b',
+            active: '#8e7b33',
+          },
+          wrong: {
+            DEFAULT: '#3a3a3c',
+            active: '#333334',
+          },
         },
         text: {
           DEFAULT: '#B3B3B3',
