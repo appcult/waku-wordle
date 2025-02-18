@@ -12,10 +12,34 @@ const keyboardLayouts: Record<Language, string[]> = {
   uk: ["йцукенгшщзхї", "фівапролджє", "ячсмитьбю"],
 };
 
+function getBestLetterResult(letter: string): "right" | "misplaced" | "wrong" | undefined {
+  const letterStates = store.me?.letterGrid.flat().flat();
+  if (!letterStates) return undefined;
+
+  // Iterate over each letter and check the results in order of priority.
+  for (const l of letterStates) {
+    if (l.character === letter && l.result === "right") {
+      return "right"; // highest priority: return immediately if found
+    }
+  }
+
+  let best: "misplaced" | "wrong" | undefined = undefined;
+  for (const l of letterStates) {
+    if (l.character === letter) {
+      if (l.result === "misplaced") {
+        best = "misplaced";
+      } else if (!best && l.result === "wrong") {
+        best = "wrong";
+      }
+    }
+  }
+
+  return best;
+}
+
 function Letter({ letter }: { letter: string }) {
   const { me } = useSnapshot(store);
-  const letters = me?.letterGrid.flat().flat();
-  const result = letters?.find((l) => l.character === letter)?.result;
+  const result = getBestLetterResult(letter);
 
   return (
     <div
@@ -31,6 +55,7 @@ function Letter({ letter }: { letter: string }) {
     </div>
   );
 }
+
 
 function Enter({ language }: { language: Language }) {
   const labels: Record<Language, string> = {
