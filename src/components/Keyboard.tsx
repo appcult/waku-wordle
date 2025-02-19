@@ -58,21 +58,34 @@ function Letter({ letter }: { letter: string }) {
 
 
 function Enter({ language }: { language: Language }) {
-  const labels: Record<Language, string> = {
-    en: "SUBMIT",
-    ru: "ПРОВЕРИТЬ",
-    uk: "ПЕРЕВІРИТИ",
+  const { gameSnapshot } = useSnapshot(store);
+  // Define labels for both states: during game and game over
+  const labels: Record<Language, { submit: string; startNew: string }> = {
+    en: { submit: "SUBMIT", startNew: "START NEW GAME" },
+    ru: { submit: "ПРОВЕРИТЬ", startNew: "НАЧАТЬ НОВУЮ ИГРУ" },
+    uk: { submit: "ПЕРЕВІРИТИ", startNew: "РОЗПОЧАТИ НОВУ ГРУ" },
   };
+
+  // Change this condition as needed to detect game over state
+  const isGameOver = gameSnapshot?.isGameOver;
 
   return (
     <div
-      onClick={enter}
+      onClick={() => {
+        if (isGameOver) {
+          // Instead of submitting a guess, toggle the start new game modal
+          store.modals.startNewGame = true;
+        } else {
+          enter();
+        }
+      }}
       className="bg-sf h-12 flex justify-center items-center w-full rounded-md active:bg-sf-active select-none cursor-pointer text-lg font-bold"
     >
-      {labels[language]}
+      {isGameOver ? labels[language].startNew : labels[language].submit}
     </div>
   );
 }
+
 
 function Backspace() {
   return (
